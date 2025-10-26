@@ -29,17 +29,17 @@ const handleSubmit = async (e) => {
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.message || 'Gagal mendaftar');
-    } else {
-      alert(` ${data.message}\n\nUsername: ${data.user.username}\nEmail: ${data.user.email}`);
-      setFormData({ username: '', email: '', password: '' });
+      alert(data.error || data.message || 'Gagal mendaftar.');
+      return;
     }
+
+    alert(`✅ Berhasil mendaftar!\n\nUsername: ${data.user.username}\nEmail: ${data.user.email}`);
+    setFormData({ username: '', email: '', password: '' });
   } catch (err) {
-    console.error(err);
-    alert('Terjadi kesalahan pada server.');
+    console.error('Error:', err);
+    alert('⚠️ Terjadi kesalahan saat menghubungi server.');
   }
 };
-
 
   const handleChange = (e) => {
     setFormData({
