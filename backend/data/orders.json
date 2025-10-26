@@ -1,0 +1,187 @@
+[
+  {
+    "id": "ORD-2024-001",
+    "userId": 1,
+    "date": "2024-10-15",
+    "status": "Delivered",
+    "total": 450000,
+    "items": [
+      {
+        "name": "Rose Bouquet Premium",
+        "qty": 2,
+        "price": 225000
+      }
+    ],
+    "shippingAddress": "Jl. Margonda Raya No. 123, Depok"
+  },
+  {
+    "id": "ORD-1761404924531",
+    "userId": 1761244707063,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 85000,
+    "items": [
+      {
+        "name": "Daisy",
+        "qty": 4,
+        "price": 20000,
+        "to": "",
+        "message": "",
+        "isPublic": false
+      }
+    ],
+    "shippingAddress": "Jerman"
+  },
+  {
+    "id": "ORD-1761405125007",
+    "userId": 1761246789035,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 25000,
+    "items": [
+      {
+        "name": "Lily",
+        "qty": 1,
+        "price": 20000,
+        "to": "",
+        "message": "",
+        "isPublic": false
+      }
+    ],
+    "shippingAddress": "Alamat belum diisi"
+  },
+  {
+    "id": "ORD-1761405309332",
+    "userId": 1761246789035,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 105000,
+    "items": [
+      {
+        "name": "Sunflower",
+        "qty": 5,
+        "price": 20000,
+        "to": "Prot",
+        "message": "asadasd",
+        "isPublic": false
+      }
+    ],
+    "shippingAddress": "Papua Nugini"
+  },
+  {
+    "id": "ORD-1761406110572",
+    "userId": 1761246789035,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 125000,
+    "items": [
+      {
+        "name": "Lily",
+        "qty": 2,
+        "price": 20000,
+        "to": "",
+        "message": "",
+        "isPublic": false
+      },
+      {
+        "name": "Sunflower",
+        "qty": 4,
+        "price": 20000,
+        "to": "",
+        "message": "",
+        "isPublic": false
+      }
+    ],
+    "shippingAddress": "Papua Nugini"
+  },
+  {
+    "id": "ORD-1761420975704",
+    "userId": 1761321493933,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 20000,
+    "items": [
+      {
+        "name": "Lily",
+        "qty": 1,
+        "price": 20000,
+        "to": "",
+        "message": "",
+        "isPublic": false
+      }
+    ],
+    "shippingAddress": "apaya"
+  },
+  {
+    "id": "ORD-1761421275765",
+    "userId": 1761321493933,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 25000,
+    "items": [
+      {
+        "name": "Lily",
+        "qty": 1,
+        "price": 20000,
+        "to": "twserjh",
+        "message": "khjgytft",
+        "isPublic": true
+      }
+    ],
+    "shippingAddress": "apaya"
+  },
+  {
+    "id": "ORD-1761421503440",
+    "userId": 1761321493933,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 20000,
+    "items": [
+      {
+        "name": "Lily",
+        "qty": 1,
+        "price": 20000,
+        "to": "",
+        "message": "",
+        "isPublic": false
+      }
+    ],
+    "shippingAddress": "apaya"
+  },
+  {
+    "id": "ORD-1761423171917",
+    "userId": 1761321493933,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 20000,
+    "items": [
+      {
+        "name": "Daisy",
+        "qty": 1,
+        "price": 20000,
+        "to": "",
+        "message": "",
+        "isPublic": false
+      }
+    ],
+    "shippingAddress": "itu"
+  },
+  {
+    "id": "ORD-1761424185616",
+    "userId": 1761321493933,
+    "date": "2025-10-25",
+    "status": "Processing",
+    "total": 20000,
+    "items": [
+      {
+        "name": "Lily",
+        "qty": 1,
+        "price": 20000,
+        "to": "",
+        "message": "",
+        "isPublic": false
+      }
+    ],
+    "shippingAddress": "itu"
+  }
+]
