@@ -1,36 +1,30 @@
 import express from "express";
-import fs from "fs";
-import path from "path";
+import { supabase } from "../lib/supabaseClient.js";
 
 const router = express.Router();
-const __dirname = path.resolve();
-const ordersFile = path.join(__dirname, "data", "orders.json");
 
-// GET /api/orders/:userId - Ambil semua orders user
-router.get("/:userId", (req, res) => {
+// 🟢 GET /api/orders/:userId
+router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    
-    if (!fs.existsSync(ordersFile)) {
-      return res.json([]);
-    }
 
-    const fileData = fs.readFileSync(ordersFile, "utf-8");
-    const orders = JSON.parse(fileData || "[]");
-    
-    // Filter orders by userId
-    const userOrders = orders.filter(order => Number(order.userId) === Number(userId));
-    
-    console.log(`📦 Orders fetched for user ${userId}:`, userOrders.length);
-    res.json(userOrders);
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("user_id", userId)
+      .order("date", { ascending: false });
+
+    if (error) throw error;
+
+    res.json(data);
   } catch (error) {
     console.error("❌ Error fetching orders:", error);
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 });
 
-// POST /api/orders - Buat order baru
-router.post("/", (req, res) => {
+// 🟢 POST /api/orders
+router.post("/", async (req, res) => {
   try {
     const { userId, items, total, shippingAddress } = req.body;
 
@@ -38,30 +32,31 @@ router.post("/", (req, res) => {
       return res.status(400).json({ message: "Data order tidak lengkap" });
     }
 
-    let orders = [];
-    if (fs.existsSync(ordersFile)) {
-      const fileData = fs.readFileSync(ordersFile, "utf-8");
-      orders = JSON.parse(fileData || "[]");
-    }
+    // 🔹 Buat ID unik seperti ORD-2024-001
+    const orderId = `ORD-${new Date().getFullYear()}-${Date.now().toString().slice(-3)}`;
 
-    // Buat order baru
     const newOrder = {
-      id: `ORD-${Date.now()}`,
-      userId: parseInt(userId),
-      date: new Date().toISOString().split('T')[0],
-      status: 'Processing',
+      id: orderId,
+      user_id: userId,
+      date: new Date().toISOString().split("T")[0],
+      status: "Processing",
       total,
       items,
-      shippingAddress: shippingAddress || 'Alamat belum diisi'
+      shipping_address: shippingAddress || "Alamat belum diisi",
     };
 
-    orders.push(newOrder);
-    fs.writeFileSync(ordersFile, JSON.stringify(orders, null, 2));
+    const { data, error } = await supabase
+      .from("orders")
+      .insert([newOrder])
+      .select()
+      .single();
 
-    console.log("✅ Order created:", newOrder.id);
-    res.status(201).json({ 
-      message: "Order berhasil dibuat!", 
-      order: newOrder 
+    if (error) throw error;
+
+    console.log("✅ Order created:", orderId);
+    res.status(201).json({
+      message: "Order berhasil dibuat!",
+      order: data,
     });
   } catch (error) {
     console.error("❌ Error creating order:", error);
@@ -69,31 +64,24 @@ router.post("/", (req, res) => {
   }
 });
 
-// PATCH /api/orders/:orderId - Update status order
-router.patch("/:orderId", (req, res) => {
+// 🟢 PATCH /api/orders/:orderId
+router.patch("/:orderId", async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
 
-    if (!fs.existsSync(ordersFile)) {
-      return res.status(404).json({ message: "Belum ada order" });
-    }
+    const { data, error } = await supabase
+      .from("orders")
+      .update({ status })
+      .eq("id", orderId)
+      .select()
+      .single();
 
-    const fileData = fs.readFileSync(ordersFile, "utf-8");
-    let orders = JSON.parse(fileData || "[]");
+    if (error) throw error;
 
-    const orderIndex = orders.findIndex(o => o.id === orderId);
-    if (orderIndex === -1) {
-      return res.status(404).json({ message: "Order tidak ditemukan" });
-    }
-
-    orders[orderIndex].status = status;
-    fs.writeFileSync(ordersFile, JSON.stringify(orders, null, 2));
-
-    console.log(`✅ Order ${orderId} status updated to ${status}`);
-    res.json({ 
-      message: "Status order berhasil diupdate", 
-      order: orders[orderIndex] 
+    res.json({
+      message: "Status order berhasil diupdate",
+      order: data,
     });
   } catch (error) {
     console.error("❌ Error updating order:", error);
