@@ -3,10 +3,15 @@ import { supabase } from "../lib/supabaseClient.js";
 
 const router = express.Router();
 
-// 🟢 GET /api/orders/:userId
+// 🔹 GET /api/orders/:userId → ambil semua order milik user
 router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
+
+    // Validasi
+    if (!userId) {
+      return res.status(400).json({ message: "User ID tidak ditemukan" });
+    }
 
     const { data, error } = await supabase
       .from("orders")
@@ -16,34 +21,37 @@ router.get("/:userId", async (req, res) => {
 
     if (error) throw error;
 
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
-    console.error("❌ Error fetching orders:", error);
+    console.error("❌ Error fetching orders:", error.message);
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 });
 
-// 🟢 POST /api/orders
+// 🔹 POST /api/orders → buat order baru
 router.post("/", async (req, res) => {
   try {
     const { userId, items, total, shippingAddress } = req.body;
 
-    if (!userId || !items || !total) {
+    if (!userId || !items?.length || !total) {
       return res.status(400).json({ message: "Data order tidak lengkap" });
     }
 
-    // 🔹 Buat ID unik seperti ORD-2024-001
-    const orderId = `ORD-${new Date().getFullYear()}-${Date.now().toString().slice(-3)}`;
+    // Buat ID unik: ORD-2025-001234
+    const orderId = `ORD-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
 
     const newOrder = {
       id: orderId,
-      user_id: userId,
+      user_id: userId, // UUID dari tabel users
       date: new Date().toISOString().split("T")[0],
       status: "Processing",
-      total,
+      total: Number(total),
       items,
       shipping_address: shippingAddress || "Alamat belum diisi",
+      created_at: new Date().toISOString(),
     };
+
+    console.log("🧾 Inserting order:", newOrder);
 
     const { data, error } = await supabase
       .from("orders")
@@ -53,22 +61,26 @@ router.post("/", async (req, res) => {
 
     if (error) throw error;
 
-    console.log("✅ Order created:", orderId);
+    console.log("✅ Order created:", data.id);
     res.status(201).json({
       message: "Order berhasil dibuat!",
       order: data,
     });
   } catch (error) {
-    console.error("❌ Error creating order:", error);
-    res.status(500).json({ message: "Terjadi kesalahan server" });
+    console.error("❌ Error creating order:", error.message);
+    res.status(500).json({ message: "Terjadi kesalahan server", error: error.message });
   }
 });
 
-// 🟢 PATCH /api/orders/:orderId
+// 🔹 PATCH /api/orders/:orderId → update status order
 router.patch("/:orderId", async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ message: "Status harus diisi" });
+    }
 
     const { data, error } = await supabase
       .from("orders")
@@ -84,7 +96,7 @@ router.patch("/:orderId", async (req, res) => {
       order: data,
     });
   } catch (error) {
-    console.error("❌ Error updating order:", error);
+    console.error("❌ Error updating order:", error.message);
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 });
