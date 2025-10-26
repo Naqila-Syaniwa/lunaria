@@ -115,7 +115,7 @@ export default function ShopPage() {
   useEffect(() => {
     const fetchFlowers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/flowers");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/flowers`);
         if (!res.ok) throw new Error("Failed to fetch flowers");
         const data = await res.json();
         setFlowers(data);

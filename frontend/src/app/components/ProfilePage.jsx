@@ -91,7 +91,7 @@ export default function ProfilePage() {
           return;
         }
 
-        const res = await fetch(`http://localhost:5000/api/profile/${storedUser.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile/${storedUser.id}`);
         if (!res.ok) throw new Error('Gagal mengambil data profil');
         
         const data = await res.json();
@@ -120,7 +120,7 @@ export default function ProfilePage() {
           return;
         }
 
-        const res = await fetch(`http://localhost:5000/api/orders/${storedUser.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${storedUser.id}`);
         const realOrders = await res.json();
         setOrders([dummyOrder, ...realOrders]);
         setLoading(false);
@@ -144,7 +144,7 @@ export default function ProfilePage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/profile/${storedUser.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile/${storedUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
