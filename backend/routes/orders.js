@@ -37,17 +37,30 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ message: "Data order tidak lengkap" });
     }
 
+    // 🔸 Jika alamat tidak dikirim dari frontend, ambil dari tabel users
+    let finalAddress = shippingAddress;
+    if (!finalAddress) {
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("address")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (userError) throw userError;
+      finalAddress = userData?.address || "Alamat belum diisi";
+    }
+
     // Buat ID unik: ORD-2025-001234
     const orderId = `ORD-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
 
     const newOrder = {
       id: orderId,
-      user_id: userId, // UUID dari tabel users
+      user_id: userId,
       date: new Date().toISOString().split("T")[0],
       status: "Processing",
       total: Number(total),
       items,
-      shipping_address: shippingAddress || "Alamat belum diisi",
+      shipping_address: finalAddress, // ✅ sudah terisi otomatis
       created_at: new Date().toISOString(),
     };
 
