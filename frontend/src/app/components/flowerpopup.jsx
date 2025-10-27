@@ -63,7 +63,7 @@ export default function FlowerPopup({
         {/* Konten scrollable */}
         <div className="flex-1 overflow-y-auto pr-1 sm:pr-3">
           <div className="flex flex-col md:flex-row gap-6 md:gap-8 mt-8 sm:ml-5">
-            {/* Bagian gambar */}
+            {/* Gambar utama */}
             <div className="flex flex-col gap-4 items-center md:mr-7 flex-shrink-0">
               <Image
                 src={flower.image}
@@ -147,12 +147,26 @@ export default function FlowerPopup({
                           f.name.toLowerCase() === comboName.toLowerCase()
                       );
 
+                      // 💡 Gunakan status dari database (true = tersedia, false = tidak)
+                      const isAvailable = comboFlower?.status ?? true;
+
                       return (
                         <div
                           key={i}
-                          className="bg-[#f4eceb] p-2 rounded-xl text-center shadow-sm cursor-pointer hover:scale-105 transition-transform w-[100px]"
+                          className={`p-2 rounded-xl text-center shadow-sm w-[100px] transition-transform ${
+                            isAvailable
+                              ? "bg-[#f4eceb] cursor-pointer hover:scale-105 hover:shadow-md"
+                              : "bg-gray-200 cursor-not-allowed opacity-60"
+                          }`}
                           onClick={() =>
-                            comboFlower && onSelectFlower(comboFlower)
+                            isAvailable &&
+                            comboFlower &&
+                            onSelectFlower(comboFlower)
+                          }
+                          title={
+                            !isAvailable
+                              ? "Bunga ini sedang tidak tersedia 🌸"
+                              : ""
                           }
                         >
                           {comboFlower ? (
@@ -162,10 +176,19 @@ export default function FlowerPopup({
                                 alt={comboFlower.name}
                                 width={80}
                                 height={80}
-                                className="mx-auto rounded-md"
+                                className={`mx-auto rounded-md ${
+                                  !isAvailable ? "grayscale" : ""
+                                }`}
                               />
-                              <p className="text-sm mt-1 truncate font-serif">
+                              <p
+                                className={`text-sm mt-1 truncate font-serif ${
+                                  !isAvailable
+                                    ? "text-gray-500 italic"
+                                    : "text-[#451900]"
+                                }`}
+                              >
                                 {comboFlower.name}
+                                {!isAvailable && " (Unavailable)"}
                               </p>
                             </>
                           ) : (
@@ -192,7 +215,7 @@ export default function FlowerPopup({
           </div>
         </div>
 
-        {/* Tombol aksi di bawah (selalu terlihat) */}
+        {/* Tombol aksi */}
         <div className="sticky bottom-0 left-0 bg-[#fff8f7] border-t border-gray-300 mt-4 pt-3 pb-4 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4">
           <button
             onClick={() => {
