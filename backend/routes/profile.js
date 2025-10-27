@@ -1,83 +1,94 @@
 import express from "express";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import { supabase } from "../lib/supabaseClient.js";
 
 const router = express.Router();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dataFile = path.join(__dirname, "../data/users.json");
-
-// Helper untuk baca file user
-const readUsers = () => JSON.parse(fs.readFileSync(dataFile, "utf8"));
-
-// Helper untuk tulis file user
-const writeUsers = (users) =>
-  fs.writeFileSync(dataFile, JSON.stringify(users, null, 2));
 
 /**
  * GET /api/profile/:id
  * Ambil profil user berdasarkan ID
  */
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const users = readUsers();
-    const user = users.find((u) => u.id == req.params.id);
+    const { id } = req.params;
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("id, username, email, phone, address, created_at")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User tidak ditemukan" });
     }
-    res.json(user);
+
+    res.status(200).json(user);
   } catch (err) {
-    console.error("Error reading users:", err);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("🔥 Error GET profile:", err);
+    res.status(500).json({ message: "Gagal mengambil data profil", error: err.message });
   }
 });
 
 /**
  * PUT /api/profile/:id
- * Update profil user
+ * Update data profil user
  */
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
-    const users = readUsers();
-    const index = users.findIndex((u) => u.id == req.params.id);
-    if (index === -1) {
-      return res.status(404).json({ message: "User not found" });
+    const { id } = req.params;
+    const { username, phone, address } = req.body;
+
+    // pastikan ada data yang mau diupdate
+    if (!username && !phone && !address) {
+      return res.status(400).json({ message: "Tidak ada data yang diubah" });
     }
 
-    users[index] = { ...users[index], ...req.body };
-    writeUsers(users);
+    const { data: updatedUser, error } = await supabase
+      .from("users")
+      .update({ username, phone, address })
+      .eq("id", id)
+      .select("id, username, email, phone, address, created_at")
+      .maybeSingle();
 
-    res.json({ message: "Profil berhasil diperbarui", user: users[index] });
+    if (error) throw error;
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User tidak ditemukan" });
+    }
+
+    res.status(200).json({ message: "Profil berhasil diperbarui", user: updatedUser });
   } catch (err) {
-    console.error("Error updating profile:", err);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("🔥 Error PUT profile:", err);
+    res.status(500).json({ message: "Gagal memperbarui profil", error: err.message });
   }
 });
 
 /**
  * DELETE /api/profile/:id
- * Hapus akun user
+ * Hapus akun user dari database
  */
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    const users = readUsers();
-    const index = users.findIndex((u) => u.id == req.params.id);
-    if (index === -1) {
-      return res.status(404).json({ message: "User not found" });
+    const { id } = req.params;
+
+    const { data: deletedUser, error } = await supabase
+      .from("users")
+      .delete()
+      .eq("id", id)
+      .select("id, username, email")
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User tidak ditemukan" });
     }
 
-    const deletedUser = users.splice(index, 1)[0];
-    writeUsers(users);
-
-    res.json({
+    res.status(200).json({
       message: "Akun berhasil dihapus",
       deletedUser: { id: deletedUser.id, username: deletedUser.username },
     });
   } catch (err) {
-    console.error("Error deleting user:", err);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("🔥 Error DELETE profile:", err);
+    res.status(500).json({ message: "Gagal menghapus akun", error: err.message });
   }
 });
 
