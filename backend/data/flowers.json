@@ -44,7 +44,7 @@
     "lifespan": 4,
     "image": "/snowdrop.webp",
     "otherImages": ["/snowdrop1.webp", "/snowdrop2.webp"],
-    "combination": ["Lily", "Hyacinth"],
+    "combination": ["Lily", "Marigold"],
     "status": false
   },
   {
@@ -344,7 +344,7 @@
     "lifespan": 6,
     "image": "/winterjasmine.webp",
     "otherImages": ["/winterjasmine1.webp", "/winterjasmine2.webp"],
-    "combination": ["Snowdrop", "Lavender"],
+    "combination": ["Sunflower", "Lavender"],
     "status": true
   },
   {
@@ -356,7 +356,7 @@
     "lifespan": 9,
     "image": "/amaryllis.webp",
     "otherImages": ["/amaryllis1.webp", "/amaryllis2.webp"],
-    "combination": ["Snowdrop", "Orchid"],
+    "combination": ["Cyclamen", "Orchid"],
     "status": true
   },
   {
@@ -380,7 +380,7 @@
     "lifespan": 7,
     "image": "/narcissus.webp",
     "otherImages": ["/narcissus1.webp", "/narcissus2.webp"],
-    "combination": ["Winter Jasmine", "Snowflake Flower"],
+    "combination": ["Winter Jasmine", "Carnation"],
     "status": true
   },
   {
