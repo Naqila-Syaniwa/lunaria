@@ -164,7 +164,7 @@ export default function ProfilePage() {
           address: data.address || ''
         });
       } catch (err) {
-        console.error("❌ Error saat fetch profil:", err);
+        console.error("Error saat fetch profil:", err);
         setPopup({ show: true, type: "error", message: `Gagal memuat profil: ${err.message}` });
       } finally {
         setLoadingProfile(false);
@@ -174,17 +174,42 @@ export default function ProfilePage() {
     const fetchOrders = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${fetchedUserId}`);
-        if (!res.ok) throw new Error('Gagal mengambil data pesanan');
-        const realOrders = await res.json();
-        setOrders(realOrders || []);
+        let realOrders = [];
+
+        if (res.ok) {
+          realOrders = await res.json();
+        } else {
+          console.warn("Gagal mengambil data pesanan dari server, hanya menampilkan dummy order.");
+        }
+
+        // ✅ Tambahkan dummy order ke daftar pesanan
+        const combinedOrders = [
+          ...realOrders,
+          {
+            ...dummyOrder,
+            id: `DUMMY-${Date.now()}`, // biar unik setiap render
+          },
+        ];
+
+        setOrders(combinedOrders);
       } catch (err) {
-        console.error("❌ Error saat fetch orders:", err);
-        setOrders([]);
-        setPopup({ show: true, type: "error", message: `Gagal memuat pesanan: ${err.message}` });
+        console.error("Error saat fetch orders:", err);
+        setOrders([
+          {
+            ...dummyOrder,
+            id: `DUMMY-${Date.now()}`,
+          },
+        ]);
+        setPopup({
+          show: true,
+          type: "error",
+          message: `Gagal memuat pesanan dari server, menampilkan dummy order.\n(${err.message})`,
+        });
       } finally {
         setLoadingOrders(false);
       }
     };
+
 
     fetchProfile();
     fetchOrders();
