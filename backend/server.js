@@ -16,8 +16,15 @@ import ordersRoute from "./routes/orders.js";
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Konfigurasi CORS hanya untuk domain frontend Anda
+const corsOptions = {
+  origin: 'https://lunaria-ebon.vercel.app',
+  optionsSuccessStatus: 200 // Untuk beberapa browser lama
+};
+
+// Gunakan middleware
+app.use(cors(corsOptions)); // ✅ Ini adalah satu-satunya panggilan cors yang Anda butuhkan
+app.use(express.json());    // Middleware untuk membaca JSON body
 
 // Routes utama
 app.use("/api/flowers", flowersRoute);
@@ -29,7 +36,7 @@ app.use("/api/orders", ordersRoute);
 
 // Root route sederhana
 app.get("/", (req, res) => {
-  res.send("🌸 Backend server is running smoothly on Vercel!");
+  res.send("🌸 Backend server is running smoothly on Vercel!");
 });
 
 // 🧩 Ini penting untuk Vercel (Serverless Function)
