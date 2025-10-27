@@ -70,21 +70,28 @@ router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { data: deletedUser, error } = await supabase
+    console.log("🗑️ Attempting to delete user:", id);
+
+    const { data, error } = await supabase
       .from("users")
       .delete()
       .eq("id", id)
-      .select("id, username, email")
-      .maybeSingle();
+      .select("*");
 
-    if (error) throw error;
-    if (!deletedUser) {
+    if (error) {
+      console.error("❌ Supabase error:", error);
+      return res.status(500).json({ message: "Supabase error", error: error.message });
+    }
+
+    if (!data || data.length === 0) {
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
 
+    console.log("✅ Deleted user:", data[0]);
+
     res.status(200).json({
       message: "Akun berhasil dihapus",
-      deletedUser: { id: deletedUser.id, username: deletedUser.username },
+      deletedUser: data[0],
     });
   } catch (err) {
     console.error("🔥 Error DELETE profile:", err);
