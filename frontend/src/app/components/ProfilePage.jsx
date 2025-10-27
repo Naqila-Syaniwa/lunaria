@@ -14,6 +14,17 @@ const dmSans = DM_Sans({
   variable: "--font-dm",
 });
 
+const dummyOrder = {
+  id: 'ORD-DEMO-001',
+  date: '2024-10-20',
+  status: 'Delivered',
+  total: 450000,
+  items: [
+    { name: 'Rose Bouquet (Contoh)', qty: 2, price: 225000 }
+  ],
+  shippingAddress: 'Jl. Juri Lomba Frontend No. 1, Jakarta'
+};
+
 // === Komponen popup sukses/error ===
 function MessagePopup({ type = "success", message, onClose }) {
   const isSuccess = type === "success";
