@@ -55,7 +55,15 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
         return;
       }
 
-      // Simulasi delay payment
+      // 🔹 Ambil alamat terbaru dari database
+      const profileRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/profile/${storedUser.id}`
+      );
+      if (!profileRes.ok) throw new Error("Gagal mengambil profil user");
+      const profileData = await profileRes.json();
+      const finalAddress = profileData.address || "Alamat belum diisi";
+
+      // Simulasi delay pembayaran
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const orderData = {
@@ -69,23 +77,26 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
           isPublic: item.isPublic || false,
         })),
         total,
-        shippingAddress: storedUser.address || "Alamat belum diisi",
+        shippingAddress: finalAddress,
         paymentMethod: method,
       };
 
       console.log("📦 orderData:", orderData);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        }
+      );
 
       if (!response.ok) throw new Error("Gagal membuat order");
 
       const result = await response.json();
 
-      // Popup sukses gantikan alert
+      // Popup sukses
       setPopup({
         show: true,
         type: "success",
@@ -99,7 +110,6 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
       setLoading(false);
     } catch (error) {
       console.error("❌ Payment error:", error);
-      // Popup error gantikan alert
       setPopup({
         show: true,
         type: "error",
@@ -111,7 +121,7 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
 
   const handlePopupClose = () => {
     setPopup({ show: false, type: "success", message: "" });
-    if (popup.type === "success") onConfirm(); // hanya tutup semua jika berhasil
+    if (popup.type === "success") onConfirm();
   };
 
   return (
@@ -127,7 +137,7 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
           </button>
         </div>
 
-        {/* Payment method switcher */}
+        {/* Pilihan metode pembayaran */}
         <div className="flex justify-center gap-4 mt-4">
           <button
             className={`px-4 py-2 rounded-lg border font-medium ${
@@ -151,7 +161,7 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
           </button>
         </div>
 
-        {/* Form */}
+        {/* Form input kartu */}
         <div className="p-5">
           {method === "credit" ? (
             <form className="space-y-4">
@@ -166,7 +176,9 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Card Number</label>
+                <label className="block text-sm font-medium mb-1">
+                  Card Number
+                </label>
                 <input
                   type="text"
                   placeholder="1234 5678 9012 3456"
@@ -176,7 +188,9 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
               </div>
               <div className="flex gap-3">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium mb-1">Expiry</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Expiry
+                  </label>
                   <input
                     type="text"
                     placeholder="MM/YY"
@@ -235,7 +249,7 @@ export default function PaymentPopup({ total, cartItems = [], onClose, onConfirm
           </button>
         </div>
 
-        {/* Modal login & popup cantik */}
+        {/* Modal login & popup hasil */}
         <LoginRequiredModal
           show={showLoginModal}
           onClose={() => setShowLoginModal(false)}
