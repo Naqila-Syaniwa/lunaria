@@ -235,11 +235,41 @@ export default function ProfilePage() {
 
   if (loadingProfile) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#FFDAF5] via-[#E9B6C2] to-[#E1688B]">
-        <div className="text-center text-white">
-          <svg className="animate-spin h-10 w-10 text-white mx-auto mb-4"></svg>
-          Loading Profile...
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#FFDAF5] via-[#E9B6C2] to-[#E1688B] text-white">
+        {/* Animasi bunga berputar */}
+        <div className="relative flex items-center justify-center mb-6">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 animate-pulse shadow-lg flex items-center justify-center">
+            <span className="text-4xl animate-spin-slow">🌸</span>
+          </div>
+          <div className="absolute w-28 h-28 border-4 border-white/20 rounded-full animate-ping-slow"></div>
         </div>
+
+        {/* Teks shimmer */}
+        <p className="text-xl font-semibold bg-gradient-to-r from-white/80 to-white/30 bg-clip-text text-transparent animate-pulse">
+          Memuat Profil Anda...
+        </p>
+
+        {/* Subteks */}
+        <p className="text-sm mt-3 text-white/80 tracking-wide animate-fadeIn">
+          Mohon tunggu sebentar 🌷
+        </p>
+
+        {/* CSS tambahan untuk animasi kustom */}
+        <style jsx>{`
+          .animate-spin-slow {
+            animation: spin 5s linear infinite;
+          }
+          .animate-ping-slow {
+            animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+          }
+          .animate-fadeIn {
+            animation: fadeIn 2s ease-in-out infinite alternate;
+          }
+          @keyframes fadeIn {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+          }
+        `}</style>
       </div>
     );
   }
